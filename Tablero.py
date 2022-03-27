@@ -1,5 +1,5 @@
-from Casilla import casilla
 import numpy as np
+from Casilla import casilla
 import tkinter as tk
 
 class tablero():
