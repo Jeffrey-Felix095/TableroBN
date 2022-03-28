@@ -18,13 +18,15 @@ class tablero():
         self.direc=0
         self.MR=np.zeros((n,n))
         self.casillas=[]#Matriz o lista que guarda las posiciones de las casillas(Un tablero se conforma de casillas)
+        self.habilitado=False
+        self.numDisparos=0
         
 
         #Posiciona cada casilla para dar la forma del tablero
         for i in range(self.n):
             self.casillas.append([])
             for j in range(self.n):
-                    self.casillas[i].append(casilla(i,j,i*40+posx,j*40+posy,(i+1)*40+posx,(j+1)*40+posy,self.interfaz,"#FF0000",self))#Agrega a la lista una 
+                    self.casillas[i].append(casilla(i,j,i*40+posx,j*40+posy,(i+1)*40+posx,(j+1)*40+posy,self.interfaz,"#23BAC4",self))#Agrega a la lista una 
                     #instancia de casilla con su respectiva posicion
 
 
@@ -33,10 +35,32 @@ class tablero():
             for j in range(self.n):
                 self.casillas[i][j].dibujarse()#Llama la funcion de dibujar de cada casilla
 
-    def verificarDisparo():#Proximamente
-        pass
+    def verificarDisparo(self,casilla):#Proximamente
+        x=casilla.getPosMx()
+        y=casilla.getPosMy()
+        if(self.MR[x][y]==0):
+            return False
+        elif(self.MR[x][y]==1 or self.MR[x][y]==2):
+           self.MR[x][y]=2
+           return True   
+        return 0
+                
+    def disparo(self,casilla):
+        if(self.habilitado):
+            if(self.verificarDisparo(casilla)):
+                casilla.setColor("#FF0000")
+            elif(self.verificarDisparo(casilla)==False):
+                casilla.setColor("#024A86")
+            self.numDisparos+=1
+            self.dibujarse()
+            if(self.numDisparos==3):
+                if(self.verificarGanador()):
+                    self.batallaN.ganador(self)
+                else:
+                    self.batallaN.habilitacion()
+                    self.numDisparos=0
 
-    def posicionar(self,casilla,numCasillas):
+    def posicionar(self,casilla,numCasillas,color):
         xTemp=casilla.getPosMx()
         yTemp=casilla.getPosMy()
         direccion=random.randint(0, 1)
@@ -49,14 +73,14 @@ class tablero():
                     self.MR[xTemp,yTemp]=1
                     casillasBarcoTemp.append(self.casillas[xTemp][yTemp])
                     print("si")
-                    self.casillas[xTemp][yTemp].setColor("#FFFFFF")
+                    self.casillas[xTemp][yTemp].setColor(color)
                     xTemp=xTemp-1
             elif(direccion==2):
                 for i in range(casillasTemp):
                     self.MR[xTemp,yTemp]=1
                     casillasBarcoTemp.append(self.casillas[xTemp][yTemp])
                     print("si")
-                    self.casillas[xTemp][yTemp].setColor("#FFFFFF")
+                    self.casillas[xTemp][yTemp].setColor(color)
                     xTemp=xTemp+1
             elif(direccion==1):
                 print("no")
@@ -64,7 +88,7 @@ class tablero():
                     self.MR[xTemp,yTemp]=1
                     print("si")
                     casillasBarcoTemp.append(self.casillas[xTemp][yTemp])
-                    self.casillas[xTemp][yTemp].setColor("#FFFFFF")
+                    self.casillas[xTemp][yTemp].setColor(color)
                     yTemp=yTemp-1
             elif(direccion==3):
                 print("no")
@@ -72,7 +96,7 @@ class tablero():
                     self.MR[xTemp,yTemp]=1
                     print("si")
                     casillasBarcoTemp.append(self.casillas[xTemp][yTemp])
-                    self.casillas[xTemp][yTemp].setColor("#FFFFFF")
+                    self.casillas[xTemp][yTemp].setColor(color)
                     yTemp=yTemp+1
             if(casillasTemp==1):
                 self.LB.append(barco("Submarino",casillasTemp,casillasBarcoTemp))
@@ -139,4 +163,21 @@ class tablero():
 
     def getMR(self,i,j):
         return self.MR[i][j]
+    
+    def setHabilitado(self, habilitado):
+        self.habilitado=habilitado
+    def getHabilitado(self):
+        return self.habilitado
+    
+    def verificarGanador(self):
+        ganar=True
+        for i in range(self.n):
+            for j in range(self.n):
+                if(self.MR[i][j]==1):
+                    ganar=False
+        return ganar
+
+    
+
+
 

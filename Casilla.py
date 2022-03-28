@@ -17,7 +17,7 @@ class casilla():
 
     def dibujarse(self):#Funcion que dibuja la casilla
         #Dibuja un cuadrado de color en su correspondiente posicion
-        self.botonInterno=tk.Button(self.interfaz,background=self.color,width=4,height=2).place(x=self.posx,y=self.posy)
+        self.botonInterno=tk.Button(self.interfaz,background=self.color,width=4,height=2, command=self.disparo).place(x=self.posx,y=self.posy)
        # self.interfaz.create_rectangle(self.posx,self.posy,self.ancho,self.largo,fill=self.color,width=3,outline="White")
 
     def getPosMx(self):
@@ -26,8 +26,8 @@ class casilla():
     def getPosMy(self):
         return self.posMy
     
-    def posicionar(self):
-        self.tablero.posicionar(self)
+    def disparo(self):
+        self.tablero.disparo(self)
 
     def setColor(self,color):
         self.color=color

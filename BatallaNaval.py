@@ -15,6 +15,8 @@ class batallaNaval():
         self.numPortaaviones=0
         self.direccion=1
         self.numeroCasillas=0
+        self.jugador1=True
+
         self.ventana2 = tk.Tk()#pantalla de inicio
         self.ventana2.title('Batalla Naval')#Titulo de la ventana
         self.ventana2.iconbitmap('IconoBN.ico')#Imagen del icono
@@ -30,13 +32,55 @@ class batallaNaval():
     
     def dibujarTablero(self):#Este es el metodo para dibujar el tablero
         self.tableroJugador.dibujarse()#Llama a metodo dibujar tablero de la clase Tablero
-        #self.tableroRival.dibujarse()#Llama a metodo dibujar tablero de la clase Tablero
+        self.tableroRival.dibujarse()#Llama a metodo dibujar tablero de la clase Tablero
 
     def __call__(self):
        
         self.ventana2.mainloop()#Esto es para que se abra la ventana al iniciar la app
         
-    
+    def generarTablero(self, tablero,color):
+         if(self.numSubmarinos!=0):
+              for i in range(self.numSubmarinos):
+                   pru=False
+                   while(pru==False or pru==0):
+                     posx = random.randint(0, self.n-1)
+                     posy = random.randint(0, self.n-1)
+                     pru=tablero.posicionar(tablero.getCasilla(posx,posy),1,color)
+         if(self.numDestructores!=0):
+                for i in range(self.numDestructores):
+                    pru=False
+                    while(pru==False):
+                        posx = random.randint(0, self.n-1)
+                        posy = random.randint(0, self.n-1)
+                        pru=tablero.posicionar(tablero.getCasilla(posx,posy),2,color)
+                for i in range(self.numCruceros):
+                    pru=False
+                    while(pru==False):
+                        posx = random.randint(0, self.n-1)
+                        posy = random.randint(0, self.n-1)
+                        pru=tablero.posicionar(tablero.getCasilla(posx,posy),3,color)
+         if(self.numPortaaviones!=0):
+                for i in range(self.numPortaaviones):
+                    pru=False
+                    while(pru==False or pru==0):
+                        posx = random.randint(0, self.n-1)
+                        posy = random.randint(0, self.n-1)
+                        pru=tablero.posicionar(tablero.getCasilla(posx,posy),4,color)
+
+
+    def habilitacion(self):
+        if(self.tableroRival.getHabilitado()):
+            tk.Label(self.interfaz, text = "Turno Maquina", font= ("Courier",30,"italic"),background="#aaaaaa").place(x=730,y=442)
+            self.tableroRival.setHabilitado(False)
+            self.tableroJugador.setHabilitado(True)
+            for i in range(3):
+                 posx = random.randint(0, self.n-1)
+                 posy = random.randint(0, self.n-1)
+                 self.tableroJugador.disparo(self.tableroJugador.getCasilla(posx,posy))
+        else:
+             tk.Label(self.interfaz, text = "Turno Jugador 1", font= ("Courier",30,"italic"),background="#aaaaaa").place(x=730,y=442)
+             self.tableroRival.setHabilitado(True)
+             self.tableroJugador.setHabilitado(False)
 
     def botonJugarAccion1(self):#Metodo para pasar a otra pantalla
         self.ventana1.destroy()#Cierra la primera pantalla
@@ -61,39 +105,13 @@ class batallaNaval():
             elif(self.espacios > 40 and self.espacios<=50):
                 self.n=10
             self.tableroJugador= tablero((self.ventana.winfo_screenheight()/4),50,self.interfaz,self.n,self)#Crea un tablero
-
-            if(self.numSubmarinos!=0):
-                for i in range(self.numSubmarinos):
-                    pru=False
-                    while(pru==False or pru==0):
-                        posx = random.randint(0, self.n-1)
-                        posy = random.randint(0, self.n-1)
-                        pru=self.tableroJugador.posicionar(self.tableroJugador.getCasilla(posx,posy),1)
-            if(self.numDestructores!=0):
-                for i in range(self.numDestructores):
-                    pru=False
-                    while(pru==False):
-                        posx = random.randint(0, self.n-1)
-                        posy = random.randint(0, self.n-1)
-                        pru=self.tableroJugador.posicionar(self.tableroJugador.getCasilla(posx,posy),2)
-            if(self.numCruceros!=0):
-                for i in range(self.numCruceros):
-                    pru=False
-                    while(pru==False):
-                        posx = random.randint(0, self.n-1)
-                        posy = random.randint(0, self.n-1)
-                        pru=self.tableroJugador.posicionar(self.tableroJugador.getCasilla(posx,posy),3)
-            if(self.numPortaaviones!=0):
-                for i in range(self.numPortaaviones):
-                    pru=False
-                    while(pru==False or pru==0):
-                        posx = random.randint(0, self.n-1)
-                        posy = random.randint(0, self.n-1)
-                        pru=self.tableroJugador.posicionar(self.tableroJugador.getCasilla(posx,posy),4)
-
-
+            self.tableroRival= tablero((self.ventana.winfo_screenheight()),50,self.interfaz,self.n,self)#Crea un tablero
+            self.generarTablero(self.tableroJugador,"#000000")
+            self.generarTablero(self.tableroRival,"#23BAC4")
+            self.habilitacion()          
             self.dibujarTablero()#Llama a la funcion dibujar
-            #self.dibujarBarcosRestantes(self.interfaz)
+            
+            
         
         
 
@@ -174,6 +192,13 @@ class batallaNaval():
 
 
 
+    def ganador(self,tablero):
+        self.tableroRival.setHabilitado(False)
+        self.tableroJugador.setHabilitado(False)
+        if(tablero==self.tableroJugador):
+            tk.Label(self.interfaz, text = "La Maquina es la GANADORA", font= ("Courier",30,"italic"),background="#aaaaaa").place(x=730,y=442)
+        else:
+            tk.Label(self.interfaz, text = "El Jugador 1 es el GANADOR", font= ("Courier",30,"italic"),background="#aaaaaa").place(x=730,y=442)
 
 
     def getDireccion(self):
